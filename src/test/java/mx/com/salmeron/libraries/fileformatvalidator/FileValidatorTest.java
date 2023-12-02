@@ -29,12 +29,14 @@ class FileValidatorTest {
         //Validation Rules
         List<LineValidationRule> lineValidationRules = new ArrayList<>();
         LineValidationRule lengthValidation = new LineLengthValidationRule(10);
+        lineValidationRules.add(lengthValidation);
+
         FileValidator validator = new FileValidator(lineValidationRules);
 
 
 
 
-        lineValidationRules.add(lengthValidation);
+
         if (resource.isPresent()) {
             try {
                 assertTrue(validator.validate(resource.get().getPath()));

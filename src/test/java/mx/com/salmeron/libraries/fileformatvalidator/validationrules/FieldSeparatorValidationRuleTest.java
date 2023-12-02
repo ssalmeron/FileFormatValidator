@@ -48,10 +48,10 @@ class FieldSeparatorValidationRuleTest {
     @Test
     @DisplayName("Validate Incorrect Separator")
     void validateIncorrectSeparator() {
-        LineFieldSeparatorValidationRule validationRule = new LineFieldSeparatorValidationRule("|"); //2 commas
+        LineFieldSeparatorValidationRule pipeSeparatorValidationRule = new LineFieldSeparatorValidationRule("|"); //2 commas
         String line = "1234567890,1234567890,1234567890,1234567890,1234567890,1234567890,1234567890,1234567890,1234567";
         try {
-            assertFalse(validationRule.validate(line));
+            assertFalse(pipeSeparatorValidationRule.validate(line));
         } catch (InvalidFieldSeparatorLengthException e) {
             fail();
         }
