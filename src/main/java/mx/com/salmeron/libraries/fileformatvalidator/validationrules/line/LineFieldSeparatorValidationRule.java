@@ -15,7 +15,7 @@ import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.errors
  */
 @ToString
 @AllArgsConstructor
-public class LineFieldSeparatorValidationRule implements LineValidationRule {
+public final class LineFieldSeparatorValidationRule implements LineValidationRule {
 
     private String fieldSeparator;
 

@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @ToString
 @AllArgsConstructor
-public class LineLengthValidationRule implements LineValidationRule {
+public final class LineLengthValidationRule implements LineValidationRule {
 
     private int lineLength;
     @Override

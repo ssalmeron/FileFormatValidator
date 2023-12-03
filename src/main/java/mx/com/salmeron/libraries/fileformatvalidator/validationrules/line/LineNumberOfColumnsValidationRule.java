@@ -15,7 +15,7 @@ import mx.com.salmeron.libraries.fileformatvalidator.validationrules.StringUtils
  */
 @ToString
 @AllArgsConstructor
-public class LineNumberOfColumnsValidationRule implements LineValidationRule{
+public final class LineNumberOfColumnsValidationRule implements LineValidationRule{
 
     private int numberOfColumns;
      private String fieldSeparator;
