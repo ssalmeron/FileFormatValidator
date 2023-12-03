@@ -1,6 +1,5 @@
-package mx.com.salmeron.libraries.fileformatvalidator.validationrules;
+package mx.com.salmeron.libraries.fileformatvalidator.validationrules.line;
 
-import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.LineLengthValidationRule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
