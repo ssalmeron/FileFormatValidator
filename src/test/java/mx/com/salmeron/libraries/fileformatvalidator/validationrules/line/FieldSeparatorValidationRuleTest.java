@@ -1,4 +1,4 @@
-package mx.com.salmeron.libraries.fileformatvalidator.validationrules;
+package mx.com.salmeron.libraries.fileformatvalidator.validationrules.line;
 
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.LineFieldSeparatorValidationRule;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.errors.InvalidFieldSeparatorLengthException;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Field Separator Validation Rule Tests")
+@DisplayName("Line - Field Separator Validation Rule Tests")
 class FieldSeparatorValidationRuleTest {
 
     @Test
