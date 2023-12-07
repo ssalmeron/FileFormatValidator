@@ -1,4 +1,4 @@
-package mx.com.salmeron.libraries.fileformatvalidator.validationrules.columns;
+package mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns;
 
 /**
  * Represents a validation rule applicable to a column of a line from a file.
