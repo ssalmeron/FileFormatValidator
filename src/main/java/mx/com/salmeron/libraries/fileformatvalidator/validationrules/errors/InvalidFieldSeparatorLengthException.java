@@ -1,4 +1,4 @@
-package mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.errors;
+package mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors;
 
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.LineFieldSeparatorValidationRule;
 
@@ -10,6 +10,8 @@ import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.LineFi
  * @since 1.0
  */
 public class InvalidFieldSeparatorLengthException extends Exception{
+    private static final long serialVersionUID = -6104060326943146520L;
+
     public InvalidFieldSeparatorLengthException() {
         super("Invalid field separator length");
 

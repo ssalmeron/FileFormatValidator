@@ -3,7 +3,7 @@ package mx.com.salmeron.libraries.fileformatvalidator.validationrules.line;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.StringUtils;
-import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.errors.InvalidFieldSeparatorLengthException;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.InvalidFieldSeparatorLengthException;
 
 /**
  * Validation rule to verify if the given text line has the specified field separator

@@ -1,6 +1,6 @@
 package mx.com.salmeron.libraries.fileformatvalidator.validationrules.line;
 
-import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.errors.InvalidFieldSeparatorLengthException;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.InvalidFieldSeparatorLengthException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
