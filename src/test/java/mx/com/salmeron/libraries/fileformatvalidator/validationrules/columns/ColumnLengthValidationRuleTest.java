@@ -1,5 +1,8 @@
 package mx.com.salmeron.libraries.fileformatvalidator.validationrules.columns;
 
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.InvalidLengthException;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnLengthValidationRule;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnValidationRule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +33,7 @@ class ColumnLengthValidationRuleTest {
         ColumnValidationRule columnLength5 = new ColumnLengthValidationRule(10);
 
         try {
-            assertFalse(columnLength5.validate("12345"));
+            assertThrows(InvalidLengthException.class, ()->columnLength5.validate("12345"));
         } catch (Exception e) {
             fail();
         }
