@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.StringUtils;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.ErrorWhileReadingSectionException;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.MethodNotImplementedException;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.NumberOfColumnsDoesNotMatchException;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.Field;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.FileStructure;
@@ -119,7 +120,7 @@ public class FileValidator {
      */
     public boolean validateFileStructure(String path) throws Exception {
 
-        boolean contentValid = false;
+        boolean contentValid;
 
         try (FileReader fr = new FileReader(path);
              BufferedReader br = new BufferedReader(fr)) {
@@ -131,6 +132,22 @@ public class FileValidator {
 
 
     }
+
+
+    /**
+     * Filters valid rows from a file at the specified path.
+     *
+     * @param path the path of the file to be processed
+     * @throws MethodNotImplementedException if the method is not yet implemented
+     */
+    public void filterValidRows(String path) throws MethodNotImplementedException {
+
+        throw new MethodNotImplementedException("Method not Implemented Yest");
+
+
+    }
+
+
 
     private List<String> readLinesFromSection(BufferedReader br, int maxLines) throws ErrorWhileReadingSectionException {
 
@@ -151,13 +168,15 @@ public class FileValidator {
 }
 
 
-
-
     /**
-     * VValidate the content section of the file structure
-     * @param readContentSection
-     * @return
-     * @throws NumberOfColumnsDoesNotMatchException if any of the rules are not met
+     * Validates the content of a section from a file against the predefined file structure.
+     * It checks that the number of columns in each line matches the expected number and
+     * applies all defined validation rules for each column.
+     *
+     * @param readContentSection List of strings representing lines from a section of the file.
+     * @return True if all lines in the content section validate successfully.
+     * @throws Exception If the number of columns in a line does not match the expected number
+     *                   or if any column fails its validation rules.
      */
     private boolean validateContent(List<String> readContentSection) throws Exception {
 
@@ -195,4 +214,7 @@ public class FileValidator {
 
         return true;
     }
+
+
+
 }
