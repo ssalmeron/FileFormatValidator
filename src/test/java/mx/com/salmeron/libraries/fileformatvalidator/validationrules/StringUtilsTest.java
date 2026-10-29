@@ -39,4 +39,20 @@ class StringUtilsTest {
 
 
     }
+
+    @Test
+    @DisplayName("Tokenize string keeps empty fields")
+    void tokenizeStringEmptyFields() {
+
+        assertArrayEquals(new String[]{"a", "", "c"}, StringUtils.tokenizeString("a||c", "|"));
+        assertArrayEquals(new String[]{"a", "b", ""}, StringUtils.tokenizeString("a|b|", "|"));
+        assertArrayEquals(new String[]{"", "b"}, StringUtils.tokenizeString("|b", "|"));
+    }
+
+    @Test
+    @DisplayName("Tokenize string with multi character separator")
+    void tokenizeStringMultiCharSeparator() {
+
+        assertArrayEquals(new String[]{"a", "b|c"}, StringUtils.tokenizeString("a||b|c", "||"));
+    }
 }

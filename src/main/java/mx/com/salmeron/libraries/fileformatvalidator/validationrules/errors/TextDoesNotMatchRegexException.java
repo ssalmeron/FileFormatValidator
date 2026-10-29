@@ -11,6 +11,6 @@ public class TextDoesNotMatchRegexException extends Exception {
 
 
     public TextDoesNotMatchRegexException(String text, Pattern regex) {
-        super("Regex validation failed: " + text + "with: " +regex.pattern());
+        super("Regex validation failed: " + text + " with: " +regex.pattern());
     }
 }

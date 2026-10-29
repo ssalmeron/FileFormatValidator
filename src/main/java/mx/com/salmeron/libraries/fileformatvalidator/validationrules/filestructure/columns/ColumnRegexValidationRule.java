@@ -21,7 +21,7 @@ public class ColumnRegexValidationRule implements ColumnValidationRule {
     public boolean validate(String text) throws Exception {
 
         Matcher matcher = pattern.matcher(text);
-        boolean matchFound = matcher.find();
+        boolean matchFound = matcher.matches();
         if (!matchFound) {
             logger.atError().log("Regex validation failed: " + text);
             throw new TextDoesNotMatchRegexException(text,pattern);

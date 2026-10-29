@@ -6,4 +6,8 @@ public class InvalidLengthException extends Exception {
     public InvalidLengthException(int textLength, int requiredLength) {
         super("Invalid length: Text provided length: " + textLength + ", Required length: " + requiredLength);
     }
+
+    public InvalidLengthException(int textLength, int minLength, int maxLength) {
+        super("Invalid length: Text provided length: " + textLength + ", Required length between: " + minLength + " and " + maxLength);
+    }
 }
