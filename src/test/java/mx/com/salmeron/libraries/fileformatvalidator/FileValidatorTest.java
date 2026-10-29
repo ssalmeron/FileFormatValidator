@@ -1,10 +1,19 @@
 package mx.com.salmeron.libraries.fileformatvalidator;
 
+import mx.com.salmeron.libraries.fileformatvalidator.result.ValidationError;
+import mx.com.salmeron.libraries.fileformatvalidator.result.ValidationResult;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.InvalidLengthException;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.InvalidNumberException;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.TextDoesNotMatchRegexException;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.ValueNotAllowedException;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.ContentLine;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.Field;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.FileStructure;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.HeaderLine;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnAllowedValuesValidationRule;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnDateValidationRule;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnLengthValidationRule;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnNumericValidationRule;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnRegexValidationRule;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.columns.ColumnValidationRule;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.line.LineLengthValidationRule;
@@ -13,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,7 +78,7 @@ class FileValidatorTest {
         List<ColumnValidationRule> column1ValidationRules = new ArrayList<>();
 
         //Create regex validation rules for Column 1
-        String col1Regex = "[1234567890]"; //Any digit
+        String col1Regex = "[0-9]+"; //Only digits
         Pattern col1Pattern = Pattern.compile(col1Regex);
         ColumnValidationRule column1RegexValidationRule = new ColumnRegexValidationRule(col1Pattern);
 
@@ -84,7 +94,7 @@ class FileValidatorTest {
         List<ColumnValidationRule> column2ValidationRules = new ArrayList<>();
 
         //Create regex validation rules for Column 2
-        String col2Regex = "[A-Za-z]"; //any letter
+        String col2Regex = "[A-Za-z]+"; //Only letters
         Pattern col2Pattern = Pattern.compile(col2Regex);
         ColumnValidationRule column2RegexValidationRule = new ColumnRegexValidationRule(col2Pattern);
 
@@ -157,7 +167,7 @@ class FileValidatorTest {
         List<ColumnValidationRule> column1ValidationRules = new ArrayList<>();
 
         //Create regex validation rules for Column 1
-        String col1Regex = "[1234567890]"; //Any digit
+        String col1Regex = "[0-9]+"; //Only digits
         Pattern col1Pattern = Pattern.compile(col1Regex);
         ColumnValidationRule column1RegexValidationRule = new ColumnRegexValidationRule(col1Pattern);
 
@@ -173,7 +183,7 @@ class FileValidatorTest {
         List<ColumnValidationRule> column2ValidationRules = new ArrayList<>();
 
         //Create regex validation rules for Column 2
-        String col2Regex = "[A-Za-z]"; //any letter
+        String col2Regex = "[A-Za-z]+"; //Only letters
         Pattern col2Pattern = Pattern.compile(col2Regex);
         ColumnValidationRule column2RegexValidationRule = new ColumnRegexValidationRule(col2Pattern);
 
@@ -227,6 +237,158 @@ class FileValidatorTest {
         }
 
 
+    }
+
+    /**
+     * Content line: Id (digits) | Name (letters) | Status (A or I)
+     */
+    private ContentLine idNameStatusContentLine(int maxLines, boolean optionalNameAndStatus) {
+        Field id = new Field("Id");
+        id.setValidationRules(List.of(new ColumnNumericValidationRule(false)));
+
+        Field name = new Field("Name", !optionalNameAndStatus);
+        name.setValidationRules(List.of(new ColumnRegexValidationRule(Pattern.compile("[A-Za-z]+"))));
+
+        Field status = new Field("Status", !optionalNameAndStatus);
+        status.setValidationRules(List.of(new ColumnAllowedValuesValidationRule("A", "I")));
+
+        return new ContentLine(List.of(id, name, status), maxLines);
+    }
+
+    private String resourcePath(String fileName) {
+        URL resource = this.getClass().getClassLoader().getResource(fileName);
+        assertNotNull(resource, "Missing test resource " + fileName);
+        return resource.getPath();
+    }
+
+    @Test
+    @DisplayName("Collect every error with line, column and field name")
+    void validateStructureCollectsAllErrors() throws Exception {
+        FileStructure fileStructure = new FileStructure(idNameStatusContentLine(0, false), "|");
+        FileValidator fileValidator = new FileValidator(fileStructure);
+
+        ValidationResult result = fileValidator.validateStructure(resourcePath("testingFiles/filestructure/MultipleErrors.txt"));
+
+        assertFalse(result.isValid());
+        assertEquals(3, result.getErrorCount());
+
+        ValidationError idError = result.getErrors().get(0);
+        assertEquals(2, idError.getLineNumber());
+        assertEquals(0, idError.getColumnIndex());
+        assertEquals("Id", idError.getFieldName());
+        assertEquals("x", idError.getValue());
+        assertInstanceOf(InvalidNumberException.class, idError.getCause());
+
+        ValidationError nameError = result.getErrors().get(1);
+        assertEquals(3, nameError.getLineNumber());
+        assertEquals("Name", nameError.getFieldName());
+        assertInstanceOf(TextDoesNotMatchRegexException.class, nameError.getCause());
+
+        ValidationError statusError = result.getErrors().get(2);
+        assertEquals(4, statusError.getLineNumber());
+        assertEquals("Status", statusError.getFieldName());
+        assertInstanceOf(ValueNotAllowedException.class, statusError.getCause());
+    }
+
+    @Test
+    @DisplayName("Stop collecting errors when max errors is reached")
+    void validateStructureMaxErrors() throws Exception {
+        FileStructure fileStructure = new FileStructure(idNameStatusContentLine(0, false), "|");
+        FileValidator fileValidator = new FileValidator(fileStructure);
+
+        ValidationResult result = fileValidator.validateStructure(
+                resourcePath("testingFiles/filestructure/MultipleErrors.txt"), StandardCharsets.UTF_8, 2);
+
+        assertEquals(2, result.getErrorCount());
+        assertTrue(result.isMaxErrorsReached());
+    }
+
+    @Test
+    @DisplayName("Optional empty fields are valid")
+    void validateStructureOptionalEmptyFields() throws Exception {
+        FileStructure fileStructure = new FileStructure(idNameStatusContentLine(0, true), "|");
+        FileValidator fileValidator = new FileValidator(fileStructure);
+
+        ValidationResult result = fileValidator.validateStructure(resourcePath("testingFiles/filestructure/EmptyFields.txt"));
+
+        assertTrue(result.isValid(), result.toString());
+    }
+
+    @Test
+    @DisplayName("Required empty fields are reported")
+    void validateStructureRequiredEmptyFields() throws Exception {
+        FileStructure fileStructure = new FileStructure(idNameStatusContentLine(0, false), "|");
+        FileValidator fileValidator = new FileValidator(fileStructure);
+
+        ValidationResult result = fileValidator.validateStructure(resourcePath("testingFiles/filestructure/EmptyFields.txt"));
+
+        assertEquals(2, result.getErrorCount());
+        assertEquals("Name", result.getErrors().get(0).getFieldName());
+        assertEquals("Status", result.getErrors().get(1).getFieldName());
+    }
+
+    @Test
+    @DisplayName("Content lines above max lines are reported")
+    void validateStructureMaxLines() throws Exception {
+        FileStructure fileStructure = new FileStructure(idNameStatusContentLine(1, true), "|");
+        FileValidator fileValidator = new FileValidator(fileStructure);
+
+        ValidationResult result = fileValidator.validateStructure(resourcePath("testingFiles/filestructure/EmptyFields.txt"));
+
+        assertEquals(1, result.getErrorCount());
+        assertEquals(2, result.getErrors().get(0).getLineNumber());
+        assertEquals("MaxLines", result.getErrors().get(0).getRuleName());
+    }
+
+    private FileStructure withHeaderFileStructure() {
+        Field code = new Field("Code");
+        Field date = new Field("Date");
+        date.setValidationRules(List.of(new ColumnDateValidationRule("uuuuMMdd")));
+        HeaderLine header = new HeaderLine("H", List.of(code, date));
+
+        return new FileStructure(List.of(header), idNameStatusContentLine(0, false), "|");
+    }
+
+    @Test
+    @DisplayName("Validate file with header line")
+    void validateStructureWithHeader() throws Exception {
+        FileValidator fileValidator = new FileValidator(withHeaderFileStructure());
+
+        ValidationResult result = fileValidator.validateStructure(resourcePath("testingFiles/filestructure/WithHeader.txt"));
+
+        assertTrue(result.isValid(), result.toString());
+    }
+
+    @Test
+    @DisplayName("Header line with wrong code is reported")
+    void validateStructureWrongHeader() throws Exception {
+        FileValidator fileValidator = new FileValidator(withHeaderFileStructure());
+
+        ValidationResult result = fileValidator.validateStructure(resourcePath("testingFiles/filestructure/WrongHeader.txt"));
+
+        assertEquals(1, result.getErrorCount());
+        assertEquals(1, result.getErrors().get(0).getLineNumber());
+        assertEquals("HeaderLine", result.getErrors().get(0).getRuleName());
+    }
+
+    @Test
+    @DisplayName("Line validation collects every failing line")
+    void validateLinesCollectsAllErrors() throws Exception {
+        FileValidator validator = new FileValidator(List.of(new LineLengthValidationRule(8)));
+
+        ValidationResult result = validator.validateLines(resourcePath("testingFiles/filestructure/MultipleErrors.txt"));
+
+        // Lines: "1|John|A"(8) "x|Mary|A"(8) "3|Pet3r|A"(9) "4|Ann|Z"(7) "5|Bob|A"(7)
+        assertEquals(3, result.getErrorCount());
+        assertEquals(3, result.getErrors().get(0).getLineNumber());
+    }
+
+    @Test
+    @DisplayName("Line validation with a file structure validator does not fail")
+    void validateWithFileStructureValidator() {
+        FileValidator fileValidator = new FileValidator(new FileStructure(idNameStatusContentLine(0, false), "|"));
+
+        assertDoesNotThrow(() -> fileValidator.validate(resourcePath("testingFiles/filestructure/MultipleErrors.txt")));
     }
 
 }

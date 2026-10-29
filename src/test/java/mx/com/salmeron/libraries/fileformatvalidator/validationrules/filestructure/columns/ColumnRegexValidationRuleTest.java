@@ -15,7 +15,7 @@ class ColumnRegexValidationRuleTest {
     void validateStrinRegexAllDigits() throws Exception {
 
 
-        Pattern regex = Pattern.compile("[1234567890]");
+        Pattern regex = Pattern.compile("[1234567890]+");
 
         String textToBeValidated = "143534548";
 
@@ -26,6 +26,15 @@ class ColumnRegexValidationRuleTest {
 
 
 
+    }
+
+    @Test
+    @DisplayName("Regex must match the whole column, not only a part of it")
+    void validatePartialMatchIsInvalid() {
+
+        ColumnValidationRule columnValidationRule = new ColumnRegexValidationRule(Pattern.compile("\\d{3}"));
+
+        assertThrows(TextDoesNotMatchRegexException.class, () -> columnValidationRule.validate("abc123xyz"));
     }
 
 

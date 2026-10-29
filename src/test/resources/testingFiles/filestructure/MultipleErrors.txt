@@ -1,0 +1,5 @@
+1|John|A
+x|Mary|A
+3|Pet3r|A
+4|Ann|Z
+5|Bob|A
