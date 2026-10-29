@@ -5,6 +5,7 @@ import lombok.ToString;
 import mx.com.salmeron.libraries.fileformatvalidator.result.ValidationError;
 import mx.com.salmeron.libraries.fileformatvalidator.result.ValidationResult;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.StringUtils;
+import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.MethodNotImplementedException;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.errors.NumberOfColumnsDoesNotMatchException;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.ContentLine;
 import mx.com.salmeron.libraries.fileformatvalidator.validationrules.filestructure.Field;
@@ -207,6 +208,16 @@ public class FileValidator {
         }
 
         return result;
+    }
+
+    /**
+     * Filters valid rows from a file at the specified path.
+     *
+     * @param path the path of the file to be processed
+     * @throws MethodNotImplementedException if the method is not yet implemented
+     */
+    public void filterValidRows(String path) throws MethodNotImplementedException {
+        throw new MethodNotImplementedException("Method not implemented yet");
     }
 
     /**
